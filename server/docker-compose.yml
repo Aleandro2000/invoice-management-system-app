@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:admin@localhost:5432/billing_database?schema=public
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=<username>
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=billing_database
+    ports:
+      - "5432:5432"
