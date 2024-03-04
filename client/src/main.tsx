@@ -4,7 +4,7 @@ import axe from "react-axe";
 import App from "./App.tsx";
 import "./index.css";
 
-if (import.meta.env.NODE_ENV !== "production") {
+if (import.meta.env.VITE_APP_MODE !== "production") {
   axe(React, ReactDOM, 1000);
 }
 
