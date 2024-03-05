@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function RegisterPage() {
+export default function REgisterPage(): JSX.Element {
   return <></>;
 }

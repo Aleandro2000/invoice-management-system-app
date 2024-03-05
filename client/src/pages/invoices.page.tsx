@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function InvoicesPage() {
+export default function InvoicesPage(): JSX.Element {
   return <></>;
 }
