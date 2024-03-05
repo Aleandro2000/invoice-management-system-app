@@ -17,12 +17,9 @@ export default function LoginPage(): JSX.Element {
   return (
     <div className="fade-in">
       <div className="container max-w-7xl mx-auto p-4">
-        <Link to="/">
-          <img src="/logo.png" className="max-w-[75px]" aria-label="HelpyAI Logo" />
-        </Link>
         <div className="my-12">
           <div className="text-center font-bold text-2xl mx-5">
-            Welcome back to HelpyAI!
+            Welcome back to Invoice Management!
           </div>
           <Formik
             initialValues={{
