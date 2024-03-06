@@ -13,6 +13,7 @@ model User {
   password String
   bills    Bill[]
   invoices Invoice[]
+  access_token RefreshToken[]
 }
 
 model Bill {
@@ -29,6 +30,14 @@ model Invoice {
   amount   Decimal
   due_date DateTime
   details  String
+  user     User     @relation(fields: [user_id], references: [id])
+  user_id  Int
+}
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  created_at DateTime
   user     User     @relation(fields: [user_id], references: [id])
   user_id  Int
 }

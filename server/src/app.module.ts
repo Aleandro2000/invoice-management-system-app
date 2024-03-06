@@ -9,6 +9,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaService } from './services/prisma/prisma.service';
 import { RefreshTokenService } from './services/refresh_token/refresh_token.service';
 import { RefreshTokenController } from './controllers/refresh_token/refresh_token.controller';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RefreshTokenScheduleService } from './schedules/refresh_token.schedule.service';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { RefreshTokenController } from './controllers/refresh_token/refresh_toke
         expiresIn: 3600 * 24 * 7,
       },
     }),
+    ScheduleModule.forRoot(),
   ],
   controllers: [AuthController, BillController, InvoiceController, RefreshTokenController],
   providers: [
@@ -27,6 +30,7 @@ import { RefreshTokenController } from './controllers/refresh_token/refresh_toke
     JwtService,
     PrismaService,
     RefreshTokenService,
+    RefreshTokenScheduleService,
   ],
 })
 export class AppModule {}

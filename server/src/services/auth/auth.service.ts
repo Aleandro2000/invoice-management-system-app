@@ -26,7 +26,7 @@ export class AuthService {
         return {
           status: 200,
           message: 'Login successfully!',
-          result: this.generateTokens(user.id, user.email),
+          result: this.generateTokens(user.id),
         };
       }
       return {
@@ -80,18 +80,23 @@ export class AuthService {
     });
   }
 
-  generateTokens(
-    id: number,
-    email: string,
-  ): {
+  async generateTokens(id: number): Promise<{
     accessToken: string;
     refreshToken: string;
-  } {
-    const accessToken = this.jwtService.sign({
-      email,
-      id,
-    });
-    const refreshToken = this.refreshTokenService.createToken();
-    return { accessToken, refreshToken };
+  }> {
+    try {
+      const accessToken = this.jwtService.sign({ id });
+      const refreshToken = this.refreshTokenService.createToken();
+      await this.prismaService.refreshToken.create({
+        data: {
+          user_id: id,
+          token: refreshToken,
+          created_at: new Date(),
+        },
+      });
+      return { refreshToken, accessToken };
+    } catch (e) {
+      return null;
+    }
   }
 }

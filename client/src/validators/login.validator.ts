@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { emailRegexValidator } from "../utils/regex";
+import { emailRegexValidator } from "../utils";
 
 export const loginValidator = yup.object({
   email: yup

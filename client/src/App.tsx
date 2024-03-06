@@ -1,20 +1,29 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
 import store from "./store";
 import LoginPage from "./pages/login.page";
 import NotFoundPage from "./pages/not-found.page";
 import InvoicesPage from "./pages/invoices.page";
 import BillsPage from "./pages/bills.page";
+import RegisterPage from "./pages/register.page.test";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    Component: (): JSX.Element => <Navigate to="/login" replace />,
+  },
   {
     path: "/login",
     Component: LoginPage,
   },
   {
     path: "/register",
-    Component: LoginPage,
+    Component: RegisterPage,
   },
   {
     path: "/bills",

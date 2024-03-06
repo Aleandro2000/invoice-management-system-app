@@ -19,15 +19,22 @@ const Toast = Swal.mixin({
   },
 });
 
-const displayToast = (title: string, text: string, type = true) =>
+const displayToast = (title: string, text: string, type: boolean = true) =>
   Toast.fire({
     icon: type ? "success" : "error",
     title,
     text,
   });
 
-export default {
+const sessionWrite = (key: string, data: object) =>
+  sessionStorage.setItem(key, JSON.stringify(data));
+
+const sessionRead = (key: string) => sessionStorage.getItem(key);
+
+export {
   emailRegexValidator,
   strongPasswordRegex,
   displayToast,
+  sessionRead,
+  sessionWrite,
 };

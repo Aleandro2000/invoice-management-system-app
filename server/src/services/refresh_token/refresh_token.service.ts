@@ -14,8 +14,4 @@ export class RefreshTokenService {
   isValidToken(token: string): boolean {
     return this.refreshTokens.has(token);
   }
-
-  deleteToken(token: string): void {
-    this.refreshTokens.delete(token);
-  }
 }
