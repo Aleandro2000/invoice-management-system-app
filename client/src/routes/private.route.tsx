@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { sessionDelete, sessionDeleteAll, sessionRead, sessionWrite } from "../utils";
+import { sessionDeleteAll, sessionRead, sessionWrite } from "../utils";
 import LoadingPage from "../pages/loading.page";
 
 const withPrivateRoute = (Component: any) => {
@@ -37,7 +37,7 @@ const withPrivateRoute = (Component: any) => {
             },
           });
           if (response.data?.status !== 200 || !response.data?.result) {
-            sessionDelete("refresh_token");
+            sessionDeleteAll();
             navigate("/login");
           } else {
             sessionWrite("access_token", response.data?.result?.accessToken);

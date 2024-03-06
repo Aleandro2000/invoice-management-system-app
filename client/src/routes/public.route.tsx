@@ -3,7 +3,6 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
-  sessionDelete,
   sessionDeleteAll,
   sessionRead,
   sessionWrite,
@@ -48,7 +47,7 @@ export default function withPrivateRoute(Component: any) {
             sessionDeleteAll();
           }
         })
-        .catch((err) => {
+        .catch(() => {
           sessionDeleteAll();
         })
         .finally(() => {
