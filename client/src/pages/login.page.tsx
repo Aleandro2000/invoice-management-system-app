@@ -9,7 +9,7 @@ import SpinnerTemplate from "../templates/spinner.template";
 import { type Dispatch } from "redux";
 import { connect } from "react-redux";
 import axios from "axios";
-import { displayToast } from "../utils";
+import { displayToast, sessionWrite } from "../utils";
 
 const LoginPage: React.FC<{
   user: any;
@@ -31,8 +31,12 @@ const LoginPage: React.FC<{
         if (response.data?.status === 200) {
           userFulfill({
             ...user,
-            ...response.data?.message,
+            ...{
+              id: response.data?.result?.id,
+              access_token: response.data?.result?.access_token,
+            },
           });
+          sessionWrite("refresh_token", response.data?.result?.refresh_token);
           displayToast("Success!", response.data?.message);
           navigate("/invoices");
         } else {

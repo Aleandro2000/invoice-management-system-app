@@ -17,7 +17,7 @@ import { RefreshTokenScheduleService } from './schedules/refresh_token.schedule.
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
       signOptions: {
-        expiresIn: 3600 * 24 * 7,
+        expiresIn: 3600,
       },
     }),
     ScheduleModule.forRoot(),

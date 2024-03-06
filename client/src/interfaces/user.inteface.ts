@@ -1,4 +1,4 @@
 export interface UserInterface {
-  email: string;
-  password: string;
+  id: number;
+  access_token: string;
 }

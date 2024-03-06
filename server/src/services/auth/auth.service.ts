@@ -26,7 +26,7 @@ export class AuthService {
         return {
           status: 200,
           message: 'Login successfully!',
-          result: this.generateTokens(user.id),
+          result: await this.generateTokens(user.id),
         };
       }
       return {
@@ -81,6 +81,7 @@ export class AuthService {
   }
 
   async generateTokens(id: number): Promise<{
+    id: number;
     accessToken: string;
     refreshToken: string;
   }> {
@@ -94,7 +95,7 @@ export class AuthService {
           created_at: new Date(),
         },
       });
-      return { refreshToken, accessToken };
+      return { id, refreshToken, accessToken };
     } catch (e) {
       return null;
     }
