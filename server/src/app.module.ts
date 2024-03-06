@@ -11,18 +11,24 @@ import { RefreshTokenService } from './services/refresh_token/refresh_token.serv
 import { RefreshTokenController } from './controllers/refresh_token/refresh_token.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RefreshTokenScheduleService } from './schedules/refresh_token.schedule.service';
+import { JwtStrategy } from 'strategies/jwt.strategy';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     JwtModule.register({
-      secret: process.env.JWT_SECRET_KEY,
+      secret: process.env.JWT_SECRET_KEY as string,
       signOptions: {
-        expiresIn: 3600,
+        expiresIn: '1h',
       },
     }),
-    ScheduleModule.forRoot(),
   ],
-  controllers: [AuthController, BillController, InvoiceController, RefreshTokenController],
+  controllers: [
+    AuthController,
+    BillController,
+    InvoiceController,
+    RefreshTokenController,
+  ],
   providers: [
     AuthService,
     BillService,
@@ -31,6 +37,7 @@ import { RefreshTokenScheduleService } from './schedules/refresh_token.schedule.
     PrismaService,
     RefreshTokenService,
     RefreshTokenScheduleService,
+    JwtStrategy,
   ],
 })
 export class AppModule {}

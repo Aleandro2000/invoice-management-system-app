@@ -29,7 +29,12 @@ const displayToast = (title: string, text: string, type: boolean = true) =>
 const sessionWrite = (key: string, data: object) =>
   sessionStorage.setItem(key, JSON.stringify(data));
 
-const sessionRead = (key: string) => sessionStorage.getItem(key);
+const sessionRead = (key: string) =>
+  JSON.parse(sessionStorage.getItem(key) as string);
+
+const sessionDelete = (key: string) => sessionStorage.removeItem(key);
+
+const sessionDeleteAll = (): void => sessionStorage.clear();
 
 export {
   emailRegexValidator,
@@ -37,4 +42,6 @@ export {
   displayToast,
   sessionRead,
   sessionWrite,
+  sessionDelete,
+  sessionDeleteAll,
 };

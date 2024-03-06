@@ -2,28 +2,25 @@ import { Controller, Post, Body, Res } from '@nestjs/common';
 import { ResponseInterface } from 'src/interfaces/response.interface';
 import { AuthService } from 'src/services/auth/auth.service';
 import { PrismaService } from 'src/services/prisma/prisma.service';
-import { RefreshTokenService } from 'src/services/refresh_token/refresh_token.service';
 
-@Controller('refresh_token')
+@Controller('api/v1/refresh_token')
 export class RefreshTokenController {
   constructor(
     private readonly authService: AuthService,
-    private readonly refreshTokenService: RefreshTokenService,
     private readonly prismaService: PrismaService,
   ) {}
 
-  @Post('refresh-token')
+  @Post('refresh')
   async refreshToken(
-    @Body() body: { refreshToken: string; id: number },
+    @Body() body: { refresh_token: string; id: number },
   ): Promise<ResponseInterface> {
     try {
-      const { id, refreshToken } = body;
+      const { id, refresh_token } = body;
       if (
-        !refreshToken ||
-        !this.refreshTokenService.isValidToken(refreshToken) ||
-        !(await this.prismaService.refreshToken.findUnique({
+        !refresh_token ||
+        !(await this.prismaService.refreshToken.findFirst({
           where: {
-            token: refreshToken,
+            token: refresh_token,
           },
         }))
       ) {
@@ -35,7 +32,7 @@ export class RefreshTokenController {
       return {
         status: 200,
         message: 'Refreshed token successfully',
-        result: await this.authService.generateTokens(id),
+        result: await this.authService.generateTokens(id as number),
       };
     } catch (e) {
       return {

@@ -15,6 +15,33 @@ export class AuthService {
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
+  async generateTokens(id: number): Promise<{
+    id: number;
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    try {
+      const accessToken = this.jwtService.sign(
+        { id },
+        {
+          secret: process.env.JWT_SECRET_KEY,
+        },
+      );
+      const refreshToken = this.refreshTokenService.createToken();
+      await this.prismaService.refreshToken.create({
+        data: {
+          user_id: id,
+          token: refreshToken,
+          created_at: new Date(),
+        },
+      });
+      return { id, refreshToken, accessToken };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async login(user: AuthDto): Promise<UserInterface | ResponseInterface> {
     try {
       const userResult = await this.prismaService.user.findUnique({
@@ -23,10 +50,13 @@ export class AuthService {
         },
       });
       if (userResult && (await compare(user.password, userResult.password))) {
+        const generatedTokens = await this.generateTokens(userResult.id);
         return {
           status: 200,
-          message: 'Login successfully!',
-          result: await this.generateTokens(user.id),
+          message: generatedTokens
+            ? 'Login successfully!'
+            : 'There is a problem with login!',
+          result: generatedTokens,
         };
       }
       return {
@@ -71,33 +101,6 @@ export class AuthService {
         status: 500,
         message: e.message,
       };
-    }
-  }
-
-  validateToken(token: string) {
-    return this.jwtService.verify(token, {
-      secret: process.env.JWT_SECRET_KEY,
-    });
-  }
-
-  async generateTokens(id: number): Promise<{
-    id: number;
-    accessToken: string;
-    refreshToken: string;
-  }> {
-    try {
-      const accessToken = this.jwtService.sign({ id });
-      const refreshToken = this.refreshTokenService.createToken();
-      await this.prismaService.refreshToken.create({
-        data: {
-          user_id: id,
-          token: refreshToken,
-          created_at: new Date(),
-        },
-      });
-      return { id, refreshToken, accessToken };
-    } catch (e) {
-      return null;
     }
   }
 }

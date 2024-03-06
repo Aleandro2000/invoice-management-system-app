@@ -11,6 +11,8 @@ import NotFoundPage from "./pages/not-found.page";
 import InvoicesPage from "./pages/invoices.page";
 import BillsPage from "./pages/bills.page";
 import RegisterPage from "./pages/register.page.test";
+import withPublicRoute from "./routes/public.route";
+import withPrivateRoute from "./routes/private.route";
 
 const router = createBrowserRouter([
   {
@@ -19,19 +21,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    Component: LoginPage,
+    Component: () => withPublicRoute(LoginPage),
   },
   {
     path: "/register",
-    Component: RegisterPage,
+    Component: () => withPublicRoute(RegisterPage),
   },
   {
     path: "/bills",
-    Component: BillsPage,
+    Component: () => withPrivateRoute(BillsPage),
   },
   {
     path: "/invoices",
-    Component: InvoicesPage,
+    Component: () => withPrivateRoute(InvoicesPage),
   },
   {
     path: "*",

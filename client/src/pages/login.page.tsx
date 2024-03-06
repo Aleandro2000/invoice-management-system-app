@@ -28,15 +28,16 @@ const LoginPage: React.FC<{
         password,
       })
       .then((response) => {
-        if (response.data?.status === 200) {
+        if (response.data?.status === 200 && response.data?.result) {
           userFulfill({
             ...user,
             ...{
               id: response.data?.result?.id,
-              access_token: response.data?.result?.access_token,
             },
           });
-          sessionWrite("refresh_token", response.data?.result?.refresh_token);
+          sessionWrite("id", response.data?.result?.id);
+          sessionWrite("refresh_token", response.data?.result?.refreshToken);
+          sessionWrite("access_token", response.data?.result?.accessToken);
           displayToast("Success!", response.data?.message);
           navigate("/invoices");
         } else {
