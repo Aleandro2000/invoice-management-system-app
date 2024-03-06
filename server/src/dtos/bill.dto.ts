@@ -1,6 +1,8 @@
 import { IsDate, IsNotEmpty } from 'class-validator';
 
 export class BillDto {
+  readonly id: number;
+
   @IsNotEmpty()
   readonly amount: number;
 

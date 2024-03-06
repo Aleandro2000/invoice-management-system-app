@@ -7,6 +7,8 @@ import { BillController } from './controllers/bill/bill.controller';
 import { InvoiceController } from './controllers/invoice/invoice.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaService } from './services/prisma/prisma.service';
+import { RefreshTokenService } from './services/refresh_token/refresh_token.service';
+import { RefreshTokenController } from './controllers/refresh_token/refresh_token.controller';
 
 @Module({
   imports: [
@@ -17,13 +19,14 @@ import { PrismaService } from './services/prisma/prisma.service';
       },
     }),
   ],
-  controllers: [AuthController, BillController, InvoiceController],
+  controllers: [AuthController, BillController, InvoiceController, RefreshTokenController],
   providers: [
     AuthService,
     BillService,
     InvoiceService,
     JwtService,
     PrismaService,
+    RefreshTokenService,
   ],
 })
 export class AppModule {}

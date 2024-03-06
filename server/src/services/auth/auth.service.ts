@@ -5,12 +5,14 @@ import { UserInterface } from 'src/interfaces/user.inteface';
 import { PrismaService } from '../prisma/prisma.service';
 import { hash, genSalt, compare } from 'bcrypt';
 import { ResponseInterface } from 'src/interfaces/response.interface';
+import { RefreshTokenService } from '../refresh_token/refresh_token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prismaService: PrismaService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
   async login(user: AuthDto): Promise<UserInterface | ResponseInterface> {
@@ -21,13 +23,10 @@ export class AuthService {
         },
       });
       if (userResult && (await compare(user.password, userResult.password))) {
-        delete userResult.password;
         return {
           status: 200,
           message: 'Login successfully!',
-          result: {
-            access_token: this.jwtService.sign(userResult),
-          },
+          result: this.generateTokens(user.id, user.email),
         };
       }
       return {
@@ -79,5 +78,20 @@ export class AuthService {
     return this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET_KEY,
     });
+  }
+
+  generateTokens(
+    id: number,
+    email: string,
+  ): {
+    accessToken: string;
+    refreshToken: string;
+  } {
+    const accessToken = this.jwtService.sign({
+      email,
+      id,
+    });
+    const refreshToken = this.refreshTokenService.createToken();
+    return { accessToken, refreshToken };
   }
 }
