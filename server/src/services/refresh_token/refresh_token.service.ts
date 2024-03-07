@@ -11,10 +11,6 @@ export class RefreshTokenService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  createToken(): string {
-    return v4();
-  }
-
   async generateTokens(
     id: number,
     isCreatingNewRefreshToken?: boolean,
@@ -31,7 +27,7 @@ export class RefreshTokenService {
         },
       );
       if (isCreatingNewRefreshToken) {
-        const refreshToken = this.createToken();
+        const refreshToken = v4();
         await this.prismaService.refreshToken.create({
           data: {
             user_id: id,
