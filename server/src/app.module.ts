@@ -12,6 +12,7 @@ import { RefreshTokenController } from './controllers/refresh_token/refresh_toke
 import { ScheduleModule } from '@nestjs/schedule';
 import { RefreshTokenScheduleService } from './schedules/refresh_token.schedule.service';
 import { JwtStrategy } from 'strategies/jwt.strategy';
+import { VerifyGuard } from './guards/auth/verify.guard';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { JwtStrategy } from 'strategies/jwt.strategy';
     RefreshTokenService,
     RefreshTokenScheduleService,
     JwtStrategy,
+    VerifyGuard,
   ],
 })
 export class AppModule {}

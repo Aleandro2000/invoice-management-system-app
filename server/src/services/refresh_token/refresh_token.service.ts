@@ -2,23 +2,62 @@ import { Injectable } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResponseInterface } from 'src/interfaces/response.interface';
-import { AuthService } from '../auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RefreshTokenService {
   constructor(
+    private readonly jwtService: JwtService,
     private readonly prismaService: PrismaService,
-    private readonly authService: AuthService,
   ) {}
 
   createToken(): string {
     return v4();
   }
 
-  async refreshToken(body: {
-    refresh_token: string;
+  async generateTokens(
+    id: number,
+    isCreatingNewRefreshToken?: boolean,
+  ): Promise<{
     id: number;
-  }): Promise<ResponseInterface> {
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    try {
+      const accessToken = this.jwtService.sign(
+        { id },
+        {
+          secret: process.env.JWT_SECRET_KEY,
+        },
+      );
+      if (isCreatingNewRefreshToken) {
+        const refreshToken = this.createToken();
+        await this.prismaService.refreshToken.create({
+          data: {
+            user_id: id,
+            token: refreshToken,
+            created_at: new Date(),
+          },
+        });
+        return { id, refreshToken, accessToken };
+      }
+      return {
+        id,
+        refreshToken: '',
+        accessToken,
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async refreshToken(
+    body: {
+      refresh_token: string;
+      id: number;
+    },
+    isCreatingNewRefreshToken?: boolean,
+  ): Promise<ResponseInterface> {
     try {
       const { id, refresh_token } = body;
       if (
@@ -37,7 +76,10 @@ export class RefreshTokenService {
       return {
         status: 200,
         message: 'Refreshed token successfully',
-        result: await this.authService.generateTokens(id as number),
+        result: await this.generateTokens(
+          id as number,
+          isCreatingNewRefreshToken,
+        ),
       };
     } catch (e) {
       return {

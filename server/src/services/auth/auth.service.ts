@@ -10,38 +10,9 @@ import { RefreshTokenService } from '../refresh_token/refresh_token.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly prismaService: PrismaService,
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
-
-  async generateTokens(id: number): Promise<{
-    id: number;
-    accessToken: string;
-    refreshToken: string;
-  }> {
-    try {
-      const accessToken = this.jwtService.sign(
-        { id },
-        {
-          secret: process.env.JWT_SECRET_KEY,
-        },
-      );
-      const refreshToken = this.refreshTokenService.createToken();
-      await this.prismaService.refreshToken.create({
-        data: {
-          user_id: id,
-          token: refreshToken,
-          created_at: new Date(),
-        },
-      });
-      return { id, refreshToken, accessToken };
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-
   async login(user: AuthDto): Promise<UserInterface | ResponseInterface> {
     try {
       const userResult = await this.prismaService.user.findUnique({
@@ -50,7 +21,10 @@ export class AuthService {
         },
       });
       if (userResult && (await compare(user.password, userResult.password))) {
-        const generatedTokens = await this.generateTokens(userResult.id);
+        const generatedTokens = await this.refreshTokenService.generateTokens(
+          userResult.id,
+          true,
+        );
         return {
           status: 200,
           message: generatedTokens
