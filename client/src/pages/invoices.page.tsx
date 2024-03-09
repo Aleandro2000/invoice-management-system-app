@@ -33,11 +33,18 @@ const InvoicesPage: React.FC<{
       <div className="flex flex-col">
         <div className="overflow-x-auto sm:mx-0.5 lg:mx-0.5 mt-24">
           <div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-            <ButtonTemplate
-              icon={faFile}
-              text="New Invoice"
-              onClick={handleClose}
-            />
+            <div className="flex space-x-3">
+              <ButtonTemplate
+                icon={faFile}
+                text="New Invoice"
+                onClick={handleClose}
+              />
+              <ButtonTemplate
+                icon={faTrash}
+                text="Delete All"
+                onClick={handleClose}
+              />
+            </div>
             <div className="overflow-hidden mt-5">
               <table className="min-w-full">
                 <thead className="bg-white border-b">
