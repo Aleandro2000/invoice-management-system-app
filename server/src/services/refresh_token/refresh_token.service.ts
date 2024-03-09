@@ -80,7 +80,26 @@ export class RefreshTokenService {
     } catch (e) {
       return {
         status: 500,
-        message: 'Error for verifyin refresh token',
+        message: 'Error for verifying refresh token',
+      };
+    }
+  }
+
+  async removeRefreshToken(refreshToken: string): Promise<ResponseInterface> {
+    try {
+      await this.prismaService.refreshToken.deleteMany({
+        where: {
+          token: refreshToken,
+        },
+      });
+      return {
+        status: 200,
+        message: 'Refresh token deleted',
+      }
+    } catch (e) {
+      return {
+        status: 500,
+        message: 'Error for removing refresh token',
       };
     }
   }

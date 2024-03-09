@@ -10,9 +10,10 @@ import { type Dispatch } from "redux";
 import { connect } from "react-redux";
 import axios from "axios";
 import { displayToast, sessionWrite } from "../utils";
+import { UserInterface } from "../interfaces/user.inteface";
 
 const LoginPage: React.FC<{
-  user: any;
+  user: UserInterface;
   userFulfill: any;
   userEmpty: any;
 }> = ({ user, userFulfill, userEmpty }): JSX.Element => {

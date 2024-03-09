@@ -8,17 +8,14 @@ import { PrismaService } from '../prisma/prisma.service';
 export class BillService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(
-    bill: BillDto,
-    user_id?: number,
-  ): Promise<BillInterface | ResponseInterface> {
+  async create(bill: BillDto): Promise<BillInterface | ResponseInterface> {
     try {
       const billResult = await this.prismaService.bill.create({
         data: {
           amount: bill.amount,
           details: bill.details,
           due_date: bill.due_date,
-          user_id: user_id,
+          user_id: bill.user_id,
         },
       });
       return {
@@ -34,23 +31,43 @@ export class BillService {
     }
   }
 
-  async read(id?: number): Promise<BillInterface | ResponseInterface> {
+  async read(
+    id?: number,
+    type?: string,
+  ): Promise<BillInterface | ResponseInterface> {
     try {
       let billResult: BillInterface | BillInterface[];
-      if (id) {
-        billResult = await this.prismaService.bill.findUnique({
-          where: {
-            id: id,
-          },
-        });
-      } else {
-        billResult = await this.prismaService.bill.findMany();
+      switch (type) {
+        case 'bill':
+          billResult = await this.prismaService.bill.findUnique({
+            where: {
+              id: id,
+            },
+          });
+          return {
+            status: 200,
+            message: 'Bills selected successfully',
+            result: billResult,
+          };
+        case 'own_bills':
+          billResult = await this.prismaService.bill.findMany({
+            where: {
+              user_id: id,
+            },
+          });
+          return {
+            status: 200,
+            message: 'Bills selected successfully',
+            result: billResult,
+          };
+        default:
+          billResult = await this.prismaService.bill.findMany();
+          return {
+            status: 200,
+            message: 'Bills selected successfully',
+            result: billResult,
+          };
       }
-      return {
-        status: 200,
-        message: 'Bills selected successfully',
-        result: billResult,
-      };
     } catch (e) {
       return {
         status: 500,

@@ -10,7 +10,7 @@ import LoginPage from "./pages/login.page";
 import NotFoundPage from "./pages/not-found.page";
 import InvoicesPage from "./pages/invoices.page";
 import BillsPage from "./pages/bills.page";
-import RegisterPage from "./pages/register.page.test";
+import RegisterPage from "./pages/register.page";
 import withPublicRoute from "./routes/public.route";
 import withPrivateRoute from "./routes/private.route";
 

@@ -19,7 +19,13 @@ export class InvoiceController {
   @UseGuards(VerifyGuard)
   @Get('read')
   async read(@Param() id?: number) {
-    return await this.invoiceService.read(id);
+    return await this.invoiceService.read(id, "invoice");
+  }
+  
+  @UseGuards(VerifyGuard)
+  @Get('read/mine/:id')
+  async readMine(@Param() id?: number) {
+    return await this.invoiceService.read(id, "own_invoices");
   }
 
   @UseGuards(VerifyGuard)

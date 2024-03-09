@@ -36,6 +36,8 @@ const sessionDelete = (key: string) => sessionStorage.removeItem(key);
 
 const sessionDeleteAll = (): void => sessionStorage.clear();
 
+const isObjectEmpty = (objectName: object) => !Object.keys(objectName).length;
+
 export {
   emailRegexValidator,
   strongPasswordRegex,
@@ -44,4 +46,5 @@ export {
   sessionWrite,
   sessionDelete,
   sessionDeleteAll,
+  isObjectEmpty,
 };

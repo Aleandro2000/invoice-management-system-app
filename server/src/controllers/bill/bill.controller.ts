@@ -19,7 +19,13 @@ export class BillController {
   @UseGuards(VerifyGuard)
   @Get('read')
   async read(@Param() id?: number) {
-    return await this.billService.read(id);
+    return await this.billService.read(id, 'invoice');
+  }
+
+  @UseGuards(VerifyGuard)
+  @Get('read/mine/:id')
+  async readMine(@Param() id?: number) {
+    return await this.billService.read(id, 'own_invoices');
   }
 
   @UseGuards(VerifyGuard)

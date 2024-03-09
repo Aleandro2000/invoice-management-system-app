@@ -11,4 +11,7 @@ export class BillDto {
 
   @IsDate()
   readonly due_date: Date;
+  
+  @IsNotEmpty()
+  readonly user_id: number;
 }

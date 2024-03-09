@@ -10,7 +10,6 @@ export class InvoiceService {
 
   async create(
     invoice: InvoiceDto,
-    user_id?: number,
   ): Promise<InvoiceInterface | ResponseInterface> {
     try {
       const invoiceResult = await this.prismaService.invoice.create({
@@ -18,7 +17,7 @@ export class InvoiceService {
           amount: invoice.amount,
           details: invoice.details,
           due_date: invoice.due_date,
-          user_id: user_id,
+          user_id: invoice.user_id,
         },
       });
       return {
@@ -34,23 +33,43 @@ export class InvoiceService {
     }
   }
 
-  async read(id?: number): Promise<InvoiceInterface | ResponseInterface> {
+  async read(
+    id?: number,
+    type?: string,
+  ): Promise<InvoiceInterface | ResponseInterface> {
     try {
       let invoiceResult: InvoiceInterface | InvoiceInterface[];
-      if (id) {
-        invoiceResult = await this.prismaService.invoice.findUnique({
-          where: {
-            id: id,
-          },
-        });
-      } else {
-        invoiceResult = await this.prismaService.invoice.findMany();
+      switch (type) {
+        case 'invoice':
+          invoiceResult = await this.prismaService.invoice.findUnique({
+            where: {
+              id: id,
+            },
+          });
+          return {
+            status: 200,
+            message: 'Invoices selected successfully',
+            result: invoiceResult,
+          };
+        case 'own_invocies':
+          invoiceResult = await this.prismaService.invoice.findMany({
+            where: {
+              user_id: id,
+            },
+          });
+          return {
+            status: 200,
+            message: 'Invoices selected successfully',
+            result: invoiceResult,
+          };
+        default:
+          invoiceResult = await this.prismaService.invoice.findMany();
+          return {
+            status: 200,
+            message: 'Invoices selected successfully',
+            result: invoiceResult,
+          };
       }
-      return {
-        status: 200,
-        message: 'Invoices selected successfully',
-        result: invoiceResult,
-      };
     } catch (e) {
       return {
         status: 500,

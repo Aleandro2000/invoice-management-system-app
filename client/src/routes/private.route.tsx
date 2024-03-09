@@ -28,11 +28,9 @@ const withPrivateRoute = (Component: any) => {
           dispatch({
             type: "USER_FULFILL",
             payload: {
-              initialUser: {
-                ...user,
-                ...{
-                  id,
-                },
+              ...user,
+              ...{
+                id,
               },
             },
           });
