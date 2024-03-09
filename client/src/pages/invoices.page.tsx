@@ -13,14 +13,68 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ModalTemplate from "../templates/modal.template";
 import FooterTemplate from "../templates/footer.template";
+import { InvoiceInterface } from "../interfaces/invoice.interface";
+import axios, { type AxiosResponse } from "axios";
+import { displayToast, sessionRead } from "../utils";
 
 const InvoicesPage: React.FC<{
   user: UserInterface;
 }> = ({ user }): JSX.Element => {
   const { invoices, invoiceFulfilled, loading } = useInvoices(user?.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteAllLoading, setDeleteAllLoading] = useState(false);
 
   const handleClose = () => setIsModalVisible(!isModalVisible);
+
+  const handleEditInvoice = (values: InvoiceInterface) => {
+    const accessToken = sessionRead("access_token");
+    setEditLoading(true);
+    axios
+      .put(`${import.meta.env.VITE_API_URL}/invoice/update`, values, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response: AxiosResponse) => {
+        if (response.data?.status === 200) {
+          displayToast("SUCCESS", response.data?.message);
+        } else {
+          displayToast("FAIL", response.data?.message, false);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setEditLoading(false);
+      });
+  };
+
+  const handleEdit = (values: InvoiceInterface) => {
+    const accessToken = sessionRead("access_token");
+    setEditLoading(true);
+    axios
+      .put(`${import.meta.env.VITE_API_URL}/invoice/update`, values, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response: AxiosResponse) => {
+        if (response.data?.status === 200) {
+          displayToast("SUCCESS", response.data?.message);
+        } else {
+          displayToast("FAIL", response.data?.message, false);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setEditLoading(false);
+      });
+  };
+
+  const handleDelete = (id: number) => {};
+
+  const handleDeleteAll = () => {};
 
   return !loading ? (
     <div id="invoices" className="fade-in">
@@ -29,6 +83,7 @@ const InvoicesPage: React.FC<{
         title="Invoice"
         isOpen={isModalVisible}
         onClose={handleClose}
+        onSave={handleEdit}
       />
       <div className="flex flex-col">
         <div className="overflow-x-auto sm:mx-0.5 lg:mx-0.5 mt-24">
@@ -43,6 +98,7 @@ const InvoicesPage: React.FC<{
                 icon={faTrash}
                 text="Delete All"
                 onClick={handleClose}
+                loading={deleteAllLoading}
               />
             </div>
             <div className="overflow-hidden mt-5">
@@ -100,10 +156,18 @@ const InvoicesPage: React.FC<{
                               <ButtonTemplate icon={faEye} text="View" />
                             </td>
                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                              <ButtonTemplate icon={faEdit} text="Edit" />
+                              <ButtonTemplate
+                                icon={faEdit}
+                                text="Edit"
+                                loading={editLoading}
+                              />
                             </td>
                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                              <ButtonTemplate icon={faTrash} text="Delete" />
+                              <ButtonTemplate
+                                icon={faTrash}
+                                text="Delete"
+                                loading={deleteLoading}
+                              />
                             </td>
                           </tr>
                         );

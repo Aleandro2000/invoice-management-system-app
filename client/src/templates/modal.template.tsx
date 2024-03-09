@@ -3,16 +3,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { InvoiceInterface } from "../interfaces/invoice.interface";
 import { BillInterface } from "../interfaces/bill.interface";
+import { Field, Form, Formik } from "formik";
+import { billValidator } from "../validators/bill.validator";
+import { invoiceValidator } from "../validators/invoice.validator";
+import { AlertTemplate } from "./alert.template";
 
 const ModalTemplate: React.FC<{
   isOpen: boolean;
-  onClose: () => void;
-  onSave?: () => void;
+  onClose: (params: any) => any;
+  onSave?: any;
   title?: string;
   closeText?: string;
   saveChangesText?: string;
   viewMode?: boolean;
   data?: InvoiceInterface | BillInterface;
+  type?: string;
 }> = ({
   isOpen,
   onClose,
@@ -22,7 +27,21 @@ const ModalTemplate: React.FC<{
   saveChangesText,
   viewMode,
   data,
+  type,
 }): JSX.Element => {
+  const handleSubmit = (values: any) => onSave(values);
+
+  const getValidationSchema = () => {
+    switch (type) {
+      case "bill":
+        return billValidator;
+      case "invoice":
+        return invoiceValidator;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       {isOpen && (
@@ -41,9 +60,53 @@ const ModalTemplate: React.FC<{
                 </button>
               </div>
               <div className="relative p-6 flex-auto">
-                <p className="my-4 text-gray-600 text-lg leading-relaxed">
-                  Modal content goes here...
-                </p>
+                {viewMode ? (
+                  <></>
+                ) : (
+                  getValidationSchema() && (
+                    <Formik
+                      initialValues={{
+                        amount: data?.amount,
+                        details: data?.details,
+                        due_date: data?.due_date,
+                      }}
+                      validationSchema={getValidationSchema()}
+                      onSubmit={handleSubmit}
+                    >
+                      {({ errors, touched }) => (
+                        <Form className="mx-auto py-12 max-w-[400px]">
+                          <Field
+                            type="number"
+                            className="w-full p-3 my-2 bg-transparent text-black rounded-lg border-2 border-black focus:border-black duration-300"
+                            placeholder="Amount"
+                            name="amount"
+                          />
+                          {errors?.amount && touched?.amount && (
+                            <AlertTemplate message={errors?.amount} />
+                          )}
+                          <Field
+                            type="text"
+                            className="w-full p-3 my-2 bg-transparent text-black rounded-lg border-2 border-black focus:border-black duration-300"
+                            placeholder="Details"
+                            name="details"
+                          />
+                          {errors?.details && touched?.details && (
+                            <AlertTemplate message={errors?.details} />
+                          )}
+                          <Field
+                            type="datetime-local"
+                            className="w-full p-3 my-2 bg-transparent text-black rounded-lg border-2 border-black focus:border-black duration-300"
+                            placeholder="Due Date"
+                            name="due_date"
+                          />
+                          {errors?.due_date && touched?.due_date && (
+                            <AlertTemplate message={errors?.due_date} />
+                          )}
+                        </Form>
+                      )}
+                    </Formik>
+                  )
+                )}
               </div>
               <div className="flex items-center justify-end p-6 border-t border-solid rounded-b-lg border-gray-200">
                 <button
