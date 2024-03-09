@@ -1,12 +1,12 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { describe, expect } from "@jest/globals";
-import NotFoundPage from "./not-found.page";
+import LoginPage from "./login.page";
 
-describe("NotFoundPage", () => {
+describe("LoginPage", () => {
   it("renders correctly", () => {
-    const { getByTestId } = render(<NotFoundPage />);
-    const componentElement = getByTestId("not-found");
+    const { getByTestId } = render(<LoginPage />);
+    const componentElement = getByTestId("login");
     expect(componentElement).toBeDefined();
   });
 });

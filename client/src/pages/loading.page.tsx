@@ -7,11 +7,13 @@ export default function LoadingPage() {
   useEffect(() => setShow(true), []);
 
   return show ? (
-    <div className="fade-in flex flex-col items-center justify-center text-center h-screen duration-300">
+    <div
+      id="loading"
+      className="fade-in flex flex-col items-center justify-center text-center h-screen duration-300"
+    >
       <SpinnerDiamond color="black" />
     </div>
   ) : (
-    <>
-    </>
+    <div id="loading" />
   );
 }

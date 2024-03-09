@@ -8,6 +8,7 @@ import { AlertTemplate } from "../templates/alert.template";
 import SpinnerTemplate from "../templates/spinner.template";
 import axios from "axios";
 import { displayToast } from "../utils";
+import FooterTemplate from "../templates/footer.template";
 
 const RegisterPage: React.FC = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ const RegisterPage: React.FC = (): JSX.Element => {
   };
 
   return (
-    <div className="fade-in">
+    <div id="register" className="fade-in">
       <div className="container max-w-7xl mx-auto p-4">
         <div className="my-12">
           <div className="text-center font-bold text-2xl mx-5">
@@ -94,6 +95,7 @@ const RegisterPage: React.FC = (): JSX.Element => {
           </Formik>
         </div>
       </div>
+      <FooterTemplate />
     </div>
   );
 };

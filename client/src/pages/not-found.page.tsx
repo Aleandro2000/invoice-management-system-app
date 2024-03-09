@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 
 export default function NotFoundPage(): JSX.Element {
   return (
-    <div className="flex flex-col items-center justify-center text-center h-screen fade-in">
+    <div
+      id="not-found"
+      className="flex flex-col items-center justify-center text-center h-screen fade-in"
+    >
       <h1 className="text-5xl font-bold text-ass-black-4 mb-4">
         404 - Page Not Found :(
       </h1>

@@ -5,8 +5,14 @@ import { connect } from "react-redux";
 import { UserInterface } from "../interfaces/user.inteface";
 import LoadingPage from "./loading.page";
 import ButtonTemplate from "../templates/button.template";
-import { faEdit, faEye, faFile, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faEye,
+  faFile,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import ModalTemplate from "../templates/modal.template";
+import FooterTemplate from "../templates/footer.template";
 
 const InvoicesPage: React.FC<{
   user: UserInterface;
@@ -17,13 +23,21 @@ const InvoicesPage: React.FC<{
   const handleClose = () => setIsModalVisible(!isModalVisible);
 
   return !loading ? (
-    <div className="fade-in">
+    <div id="invoices" className="fade-in">
       <NavbarTemplate />
-      <ModalTemplate title="Invoice" isOpen={isModalVisible} onClose={handleClose} />
+      <ModalTemplate
+        title="Invoice"
+        isOpen={isModalVisible}
+        onClose={handleClose}
+      />
       <div className="flex flex-col">
         <div className="overflow-x-auto sm:mx-0.5 lg:mx-0.5 mt-24">
           <div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-            <ButtonTemplate icon={faFile} text="New Invoice" onClick={handleClose} />
+            <ButtonTemplate
+              icon={faFile}
+              text="New Invoice"
+              onClick={handleClose}
+            />
             <div className="overflow-hidden mt-5">
               <table className="min-w-full">
                 <thead className="bg-white border-b">
@@ -94,9 +108,12 @@ const InvoicesPage: React.FC<{
           </div>
         </div>
       </div>
+      <FooterTemplate />
     </div>
   ) : (
-    <LoadingPage />
+    <div id="invoices">
+      <LoadingPage />
+    </div>
   );
 };
 

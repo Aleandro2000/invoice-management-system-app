@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { displayToast, sessionWrite } from "../utils";
 import { UserInterface } from "../interfaces/user.inteface";
+import FooterTemplate from "../templates/footer.template";
 
 const LoginPage: React.FC<{
   user: UserInterface;
@@ -53,7 +54,7 @@ const LoginPage: React.FC<{
   };
 
   return (
-    <div className="fade-in">
+    <div id="login" className="fade-in">
       <div className="container max-w-7xl mx-auto p-4">
         <div className="my-12">
           <div className="text-center font-bold text-2xl mx-5">
@@ -113,6 +114,7 @@ const LoginPage: React.FC<{
           </Formik>
         </div>
       </div>
+      <FooterTemplate />
     </div>
   );
 };

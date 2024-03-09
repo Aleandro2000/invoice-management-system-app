@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { UserInterface } from "../interfaces/user.inteface";
 import LoadingPage from "./loading.page";
 import useBills from "../hooks/use-bills";
+import FooterTemplate from "../templates/footer.template";
 
 const BillsPage: React.FC<{
   user: UserInterface;
@@ -11,7 +12,7 @@ const BillsPage: React.FC<{
   const { bills, billFulfilled, loading } = useBills(user?.id);
 
   return !loading ? (
-    <div className="fade-in">
+    <div id="bills" className="fade-in">
       <NavbarTemplate />
       <div className="flex flex-col">
         <div className="overflow-x-auto sm:mx-0.5 lg:mx-0.5 mt-24">
@@ -71,9 +72,12 @@ const BillsPage: React.FC<{
           </div>
         </div>
       </div>
+      <FooterTemplate />
     </div>
   ) : (
-    <LoadingPage />
+    <div id="bills">
+      <LoadingPage />
+    </div>
   );
 };
 
