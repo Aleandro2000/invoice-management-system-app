@@ -129,10 +129,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
       type: "USER_FULFILL",
       payload,
     }),
-  userEmpty: (payload: any) =>
+  userEmpty: () =>
     dispatch({
       type: "USER_FULFILL",
-      payload,
     }),
 });
 

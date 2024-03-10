@@ -18,6 +18,7 @@ const ModalTemplate: React.FC<{
   viewMode?: boolean;
   data?: InvoiceInterface | BillInterface;
   type?: string;
+  editMode?: boolean;
 }> = ({
   isOpen,
   onClose,
@@ -28,6 +29,7 @@ const ModalTemplate: React.FC<{
   viewMode,
   data,
   type,
+  editMode,
 }): JSX.Element => {
   const handleSubmit = (values: any) => onSave(values);
 
@@ -61,7 +63,11 @@ const ModalTemplate: React.FC<{
               </div>
               <div className="relative p-6 flex-auto">
                 {viewMode ? (
-                  <></>
+                  <>
+                    <p>Amount: {data?.amount}</p>
+                    <p>Details: {data?.details}</p>
+                    <p>Due Date: {data?.due_date.toString()}</p>
+                  </>
                 ) : (
                   getValidationSchema() && (
                     <Formik

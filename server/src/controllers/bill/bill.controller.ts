@@ -35,7 +35,7 @@ export class BillController {
   }
 
   @UseGuards(VerifyGuard)
-  @Put('update')
+  @Put('update/:id')
   async update(@Body() bill: BillDto, @Param() id: number) {
     return await this.billService.update(bill, id);
   }

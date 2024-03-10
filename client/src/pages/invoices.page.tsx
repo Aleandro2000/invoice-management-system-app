@@ -16,29 +16,37 @@ import FooterTemplate from "../templates/footer.template";
 import { InvoiceInterface } from "../interfaces/invoice.interface";
 import axios, { type AxiosResponse } from "axios";
 import { displayToast, sessionRead } from "../utils";
+import { type Dispatch } from "redux";
 
 const InvoicesPage: React.FC<{
   user: UserInterface;
-}> = ({ user }): JSX.Element => {
+  invoice: InvoiceInterface[];
+  invoiceFulfill: any;
+  invoiceEmpty: any;
+}> = ({ user, invoice, invoiceFulfill, invoiceEmpty }): JSX.Element => {
   const { invoices, invoiceFulfilled, loading } = useInvoices(user?.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [viewMode, setViewMode] = useState(false);
+  const [viewData, setViewData] = useState<InvoiceInterface>();
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteAllLoading, setDeleteAllLoading] = useState(false);
 
   const handleClose = () => setIsModalVisible(!isModalVisible);
 
-  const handleEditInvoice = (values: InvoiceInterface) => {
+  const handleNewInvoice = (values: InvoiceInterface) => {
     const accessToken = sessionRead("access_token");
     setEditLoading(true);
     axios
-      .put(`${import.meta.env.VITE_API_URL}/invoice/update`, values, {
+      .post(`${import.meta.env.VITE_API_URL}/invoice/create`, values, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response: AxiosResponse) => {
         if (response.data?.status === 200) {
+          invoiceFulfill([...invoice, values] as InvoiceInterface[]);
           displayToast("SUCCESS", response.data?.message);
         } else {
           displayToast("FAIL", response.data?.message, false);
@@ -50,17 +58,22 @@ const InvoicesPage: React.FC<{
       });
   };
 
-  const handleEdit = (values: InvoiceInterface) => {
+  const handleEdit = (id: number, values: InvoiceInterface) => {
     const accessToken = sessionRead("access_token");
     setEditLoading(true);
     axios
-      .put(`${import.meta.env.VITE_API_URL}/invoice/update`, values, {
+      .put(`${import.meta.env.VITE_API_URL}/invoice/update/${id}`, values, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response: AxiosResponse) => {
         if (response.data?.status === 200) {
+          invoiceFulfill(
+            invoice.map((item) =>
+              item.id === id ? { ...item, ...values } : item
+            )
+          );
           displayToast("SUCCESS", response.data?.message);
         } else {
           displayToast("FAIL", response.data?.message, false);
@@ -80,10 +93,13 @@ const InvoicesPage: React.FC<{
     <div id="invoices" className="fade-in">
       <NavbarTemplate />
       <ModalTemplate
-        title="Invoice"
+        data={viewData}
+        title={`${viewMode ? "View" : editMode ? "Edit" : "New"} Invoice`}
         isOpen={isModalVisible}
         onClose={handleClose}
-        onSave={handleEdit}
+        onSave={editMode ? handleEdit : handleNewInvoice}
+        viewMode={viewMode}
+        type="invoice"
       />
       <div className="flex flex-col">
         <div className="overflow-x-auto sm:mx-0.5 lg:mx-0.5 mt-24">
@@ -92,7 +108,12 @@ const InvoicesPage: React.FC<{
               <ButtonTemplate
                 icon={faFile}
                 text="New Invoice"
-                onClick={handleClose}
+                onClick={() => {
+                  setEditMode(false);
+                  setViewMode(false);
+                  setViewData(undefined);
+                  handleClose();
+                }}
               />
               <ButtonTemplate
                 icon={faTrash}
@@ -153,13 +174,27 @@ const InvoicesPage: React.FC<{
                               {item?.due_date?.toString()}
                             </td>
                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                              <ButtonTemplate icon={faEye} text="View" />
+                              <ButtonTemplate
+                                icon={faEye}
+                                text="View"
+                                onClick={() => {
+                                  setViewMode(true);
+                                  setViewData(invoice[key]);
+                                  handleClose();
+                                }}
+                              />
                             </td>
                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                               <ButtonTemplate
                                 icon={faEdit}
                                 text="Edit"
                                 loading={editLoading}
+                                onClick={() => {
+                                  setEditMode(true);
+                                  setViewMode(false);
+                                  setViewData(invoice[key]);
+                                  handleClose();
+                                }}
                               />
                             </td>
                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
@@ -190,6 +225,19 @@ const InvoicesPage: React.FC<{
 
 const mapStateToProps = (state: any) => ({
   user: state?.userReducer,
+  invoice: state?.invoiceReducer,
 });
 
-export default connect(mapStateToProps)(InvoicesPage);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  invoiceFulfill: (payload: any) =>
+    dispatch({
+      type: "INVOICE_FULFILL",
+      payload,
+    }),
+  invoiceEmpty: () =>
+    dispatch({
+      type: "INVOICE_EMPTY",
+    }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(InvoicesPage);
