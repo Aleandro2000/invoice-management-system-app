@@ -24,10 +24,7 @@ export default function useInvoices(id: number) {
         .then((response) => {
           dispatch({
             type: "INVOICE_FULFILL",
-            payload: {
-              ...invoice,
-              ...response.data?.result,
-            },
+            payload: { invoice: response.data?.result },
           });
           setInvoices(response.data?.result);
         })

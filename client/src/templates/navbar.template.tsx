@@ -1,11 +1,16 @@
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu } from "@headlessui/react";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { sessionDeleteAll, sessionRead } from "../utils";
+import SpinnerTemplate from "./spinner.template";
 
 export default function NavbarTemplate(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -15,13 +20,39 @@ export default function NavbarTemplate(): JSX.Element {
     };
   }, []);
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    const refreshToken = sessionRead("refresh_token");
+    const accessToken = sessionRead("access_token");
+    setLoading(true);
+    axios
+      .post(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/v1/refresh_token/remove_refresh_token`,
+        {
+          refresh_token: refreshToken,
+        },
+        {
+          headers: {
+            Authorization: `Brearer ${accessToken}`,
+          },
+        }
+      )
+      .then(() => {
+        sessionDeleteAll();
+      })
+      .catch(() => {
+        sessionDeleteAll();
+      })
+      .finally(() => {
+        setLoading(false);
+        navigate("/login");
+      });
+  };
 
   return (
     <nav
-      className={`${
-        !isScrolled ? "bg-white" : "bg-gray shadow-md"
-      } py-4 fixed w-full z-10`}
+      className={`${isScrolled && "shadow-md"} bg-white py-4 fixed w-full z-10`}
     >
       <div className="container max-w-7xl mx-auto px-4">
         <div className="flex justify-end items-center">
@@ -53,6 +84,24 @@ export default function NavbarTemplate(): JSX.Element {
                     >
                       Bills
                     </Link>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                      } block p-2 text-sm font-bold w-full text-left`}
+                      onClick={handleLogout}
+                      type="button"
+                    >
+                      {loading ? (
+                        <SpinnerTemplate />
+                      ) : (
+                        <FontAwesomeIcon icon={faSignOut} />
+                      )}{" "}
+                      Logout
+                    </button>
                   )}
                 </Menu.Item>
               </div>

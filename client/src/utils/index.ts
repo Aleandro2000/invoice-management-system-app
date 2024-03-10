@@ -36,7 +36,10 @@ const sessionDelete = (key: string) => sessionStorage.removeItem(key);
 
 const sessionDeleteAll = (): void => sessionStorage.clear();
 
-const isObjectEmpty = (objectName: object) => !Object.keys(objectName).length;
+const isObjectEmpty = (objectName: any) =>
+  !objectName || typeof objectName === "object"
+    ? !Object.keys(objectName).length
+    : false;
 
 export {
   emailRegexValidator,

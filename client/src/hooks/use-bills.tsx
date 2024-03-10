@@ -25,8 +25,7 @@ export default function useBills(id: number) {
           dispatch({
             type: "BILL_FULFILL",
             payload: {
-              ...bill,
-              ...response.data?.result,
+              bill: response.data?.result,
             },
           });
           setBills(response.data?.result);

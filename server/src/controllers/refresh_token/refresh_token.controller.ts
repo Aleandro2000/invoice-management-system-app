@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { VerifyGuard } from 'src/guards/auth/verify.guard';
 import { ResponseInterface } from 'src/interfaces/response.interface';
 import { RefreshTokenService } from 'src/services/refresh_token/refresh_token.service';
@@ -15,7 +15,7 @@ export class RefreshTokenController {
   }
 
   @UseGuards(VerifyGuard)
-  @Delete('remove_refresh_token')
+  @Post('remove_refresh_token')
   async removeRefreshToken(
     @Body() body: { refresh_token: string },
   ): Promise<ResponseInterface> {

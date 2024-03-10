@@ -16,7 +16,7 @@ export class InvoiceService {
         data: {
           amount: invoice.amount,
           details: invoice.details,
-          due_date: invoice.due_date,
+          due_date: new Date(invoice.due_date).toISOString(),
           user_id: invoice.user_id,
         },
       });
@@ -90,7 +90,7 @@ export class InvoiceService {
         data: {
           amount: invoice.amount,
           details: invoice.details,
-          due_date: invoice.due_date,
+          due_date: new Date(invoice.due_date).toISOString(),
         },
       });
       return {
@@ -106,13 +106,21 @@ export class InvoiceService {
     }
   }
 
-  async delete(id: number): Promise<InvoiceInterface | ResponseInterface> {
+  async delete(id?: number, user_id?: number): Promise<InvoiceInterface | ResponseInterface> {
     try {
-      await this.prismaService.invoice.delete({
-        where: {
-          id: id,
-        },
-      });
+      if (id) {
+        await this.prismaService.invoice.delete({
+          where: {
+            id: id,
+          },
+        });
+      } else if (user_id) {
+        await this.prismaService.invoice.deleteMany({
+          where: {
+            user_id: user_id,
+          },
+        });
+      }
       return {
         status: 200,
         message: 'Invoice deleted successfully',

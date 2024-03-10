@@ -7,10 +7,11 @@ import { Field, Form, Formik } from "formik";
 import { billValidator } from "../validators/bill.validator";
 import { invoiceValidator } from "../validators/invoice.validator";
 import { AlertTemplate } from "./alert.template";
+import { useSelector } from "react-redux";
 
 const ModalTemplate: React.FC<{
   isOpen: boolean;
-  onClose: (params: any) => any;
+  onClose: (params?: any) => any;
   onSave?: any;
   title?: string;
   closeText?: string;
@@ -18,7 +19,7 @@ const ModalTemplate: React.FC<{
   viewMode?: boolean;
   data?: InvoiceInterface | BillInterface;
   type?: string;
-  editMode?: boolean;
+  id?: number;
 }> = ({
   isOpen,
   onClose,
@@ -29,9 +30,16 @@ const ModalTemplate: React.FC<{
   viewMode,
   data,
   type,
-  editMode,
+  id,
 }): JSX.Element => {
-  const handleSubmit = (values: any) => onSave(values);
+  const user = useSelector((state: any) => state?.userReducer);
+
+  const handleSubmit = (values: any) => {
+    onClose();
+    id
+      ? onSave(id, { ...values, user_id: user?.id })
+      : onSave({ ...values, user_id: user?.id });
+  };
 
   const getValidationSchema = () => {
     switch (type) {
@@ -66,7 +74,7 @@ const ModalTemplate: React.FC<{
                   <>
                     <p>Amount: {data?.amount}</p>
                     <p>Details: {data?.details}</p>
-                    <p>Due Date: {data?.due_date.toString()}</p>
+                    <p>Due Date: {data?.due_date?.toString()}</p>
                   </>
                 ) : (
                   getValidationSchema() && (
@@ -74,7 +82,7 @@ const ModalTemplate: React.FC<{
                       initialValues={{
                         amount: data?.amount,
                         details: data?.details,
-                        due_date: data?.due_date,
+                        due_date: data?.due_date?.toString()?.split("T")[0],
                       }}
                       validationSchema={getValidationSchema()}
                       onSubmit={handleSubmit}
@@ -100,7 +108,7 @@ const ModalTemplate: React.FC<{
                             <AlertTemplate message={errors?.details} />
                           )}
                           <Field
-                            type="datetime-local"
+                            type="date"
                             className="w-full p-3 my-2 bg-transparent text-black rounded-lg border-2 border-black focus:border-black duration-300"
                             placeholder="Due Date"
                             name="due_date"
@@ -108,27 +116,26 @@ const ModalTemplate: React.FC<{
                           {errors?.due_date && touched?.due_date && (
                             <AlertTemplate message={errors?.due_date} />
                           )}
+                          <div className="flex items-center justify-end p-6 border-t border-solid rounded-b-lg border-gray-200">
+                            <button
+                              className="text-black background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
+                              type="button"
+                              onClick={onClose}
+                            >
+                              {closeText || "Close"}
+                            </button>
+                            <button
+                              className="bg-black text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                              type="submit"
+                            >
+                              {saveChangesText || "Save Change"}
+                            </button>
+                          </div>
                         </Form>
                       )}
                     </Formik>
                   )
                 )}
-              </div>
-              <div className="flex items-center justify-end p-6 border-t border-solid rounded-b-lg border-gray-200">
-                <button
-                  className="text-black background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
-                  type="button"
-                  onClick={onClose}
-                >
-                  {closeText || "Close"}
-                </button>
-                <button
-                  className="bg-black text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                  type="button"
-                  onClick={onSave}
-                >
-                  {saveChangesText || "Save Change"}
-                </button>
               </div>
             </div>
           </div>

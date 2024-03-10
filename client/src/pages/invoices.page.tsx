@@ -20,11 +20,11 @@ import { type Dispatch } from "redux";
 
 const InvoicesPage: React.FC<{
   user: UserInterface;
-  invoice: InvoiceInterface[];
+  invoice?: InvoiceInterface[];
   invoiceFulfill: any;
   invoiceEmpty: any;
 }> = ({ user, invoice, invoiceFulfill, invoiceEmpty }): JSX.Element => {
-  const { invoices, invoiceFulfilled, loading } = useInvoices(user?.id);
+  const { invoiceFulfilled, loading } = useInvoices(user?.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [viewMode, setViewMode] = useState(false);
@@ -32,6 +32,7 @@ const InvoicesPage: React.FC<{
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteAllLoading, setDeleteAllLoading] = useState(false);
+  const [id, setId] = useState<number | undefined>();
 
   const handleClose = () => setIsModalVisible(!isModalVisible);
 
@@ -46,7 +47,12 @@ const InvoicesPage: React.FC<{
       })
       .then((response: AxiosResponse) => {
         if (response.data?.status === 200) {
-          invoiceFulfill([...invoice, values] as InvoiceInterface[]);
+          invoiceFulfill({
+            invoice: [
+              ...(invoice ?? []),
+              response.data?.result,
+            ] as InvoiceInterface[],
+          });
           displayToast("SUCCESS", response.data?.message);
         } else {
           displayToast("FAIL", response.data?.message, false);
@@ -69,11 +75,11 @@ const InvoicesPage: React.FC<{
       })
       .then((response: AxiosResponse) => {
         if (response.data?.status === 200) {
-          invoiceFulfill(
-            invoice.map((item) =>
+          invoiceFulfill({
+            invoice: invoice?.map((item) =>
               item.id === id ? { ...item, ...values } : item
-            )
-          );
+            ),
+          });
           displayToast("SUCCESS", response.data?.message);
         } else {
           displayToast("FAIL", response.data?.message, false);
@@ -85,14 +91,62 @@ const InvoicesPage: React.FC<{
       });
   };
 
-  const handleDelete = (id: number) => {};
+  const handleDelete = (id: number) => {
+    const accessToken = sessionRead("access_token");
+    setDeleteLoading(true);
+    axios
+      .delete(`${import.meta.env.VITE_API_URL}/invoice/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response: AxiosResponse) => {
+        if (response.data?.status === 200) {
+          invoiceFulfill({
+            invoice: invoice?.filter((item) => item.id !== id),
+          });
+          displayToast("SUCCESS", response.data?.message);
+        } else {
+          displayToast("FAIL", response.data?.message, false);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setDeleteLoading(false);
+      });
+  };
 
-  const handleDeleteAll = () => {};
+  const handleDeleteAll = () => {
+    const accessToken = sessionRead("access_token");
+    setDeleteAllLoading(true);
+    axios
+      .delete(
+        `${import.meta.env.VITE_API_URL}/invoice/delete_by_user/${user?.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((response: AxiosResponse) => {
+        if (response.data?.status === 200) {
+          invoiceEmpty();
+          displayToast("SUCCESS", response.data?.message);
+        } else {
+          displayToast("FAIL", response.data?.message, false);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setDeleteAllLoading(false);
+      });
+  };
 
   return !loading ? (
     <div id="invoices" className="fade-in">
       <NavbarTemplate />
       <ModalTemplate
+        id={id}
         data={viewData}
         title={`${viewMode ? "View" : editMode ? "Edit" : "New"} Invoice`}
         isOpen={isModalVisible}
@@ -112,13 +166,14 @@ const InvoicesPage: React.FC<{
                   setEditMode(false);
                   setViewMode(false);
                   setViewData(undefined);
+                  setId(undefined);
                   handleClose();
                 }}
               />
               <ButtonTemplate
                 icon={faTrash}
                 text="Delete All"
-                onClick={handleClose}
+                onClick={handleDeleteAll}
                 loading={deleteAllLoading}
               />
             </div>
@@ -158,7 +213,7 @@ const InvoicesPage: React.FC<{
                 </thead>
                 <tbody>
                   {invoiceFulfilled
-                    ? invoices?.map((item, key): JSX.Element => {
+                    ? invoice?.map((item, key): JSX.Element => {
                         return (
                           <tr key={key} className="bg-gray-100 border-b">
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -180,6 +235,7 @@ const InvoicesPage: React.FC<{
                                 onClick={() => {
                                   setViewMode(true);
                                   setViewData(invoice[key]);
+                                  setId(undefined);
                                   handleClose();
                                 }}
                               />
@@ -193,6 +249,7 @@ const InvoicesPage: React.FC<{
                                   setEditMode(true);
                                   setViewMode(false);
                                   setViewData(invoice[key]);
+                                  setId(item?.id);
                                   handleClose();
                                 }}
                               />
@@ -202,6 +259,7 @@ const InvoicesPage: React.FC<{
                                 icon={faTrash}
                                 text="Delete"
                                 loading={deleteLoading}
+                                onClick={() => handleDelete(item?.id)}
                               />
                             </td>
                           </tr>
@@ -225,7 +283,7 @@ const InvoicesPage: React.FC<{
 
 const mapStateToProps = (state: any) => ({
   user: state?.userReducer,
-  invoice: state?.invoiceReducer,
+  invoice: state?.invoiceReducer?.invoice,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

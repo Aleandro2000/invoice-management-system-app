@@ -14,7 +14,7 @@ export class BillService {
         data: {
           amount: bill.amount,
           details: bill.details,
-          due_date: bill.due_date,
+          due_date: new Date(bill.due_date).toISOString(),
           user_id: bill.user_id,
         },
       });
@@ -88,7 +88,7 @@ export class BillService {
         data: {
           amount: bill.amount,
           details: bill.details,
-          due_date: bill.due_date,
+          due_date: new Date(bill.due_date).toISOString(),
         },
       });
       return {
@@ -104,13 +104,24 @@ export class BillService {
     }
   }
 
-  async delete(id: number): Promise<BillInterface | ResponseInterface> {
+  async delete(
+    id?: number,
+    user_id?: number,
+  ): Promise<BillInterface | ResponseInterface> {
     try {
-      await this.prismaService.bill.delete({
-        where: {
-          id: id,
-        },
-      });
+      if (id) {
+        await this.prismaService.bill.delete({
+          where: {
+            id: id,
+          },
+        });
+      } else if (user_id) {
+        await this.prismaService.bill.deleteMany({
+          where: {
+            user_id: user_id,
+          },
+        });
+      }
       return {
         status: 200,
         message: 'Bill deleted successfully',

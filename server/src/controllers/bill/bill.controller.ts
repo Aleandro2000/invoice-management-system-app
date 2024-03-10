@@ -36,13 +36,19 @@ export class BillController {
 
   @UseGuards(VerifyGuard)
   @Put('update/:id')
-  async update(@Body() bill: BillDto, @Param() id: number) {
-    return await this.billService.update(bill, id);
+  async update(@Body() bill: BillDto, @Param() params: any) {
+    return await this.billService.update(bill, parseInt(params.id));
   }
 
   @UseGuards(VerifyGuard)
-  @Delete('delete')
-  async delete(@Param() id: number) {
-    return await this.billService.delete(id);
+  @Delete('delete/:id')
+  async delete(@Param() params: any) {
+    return await this.billService.delete(parseInt(params.id));
+  }
+
+  @UseGuards(VerifyGuard)
+  @Delete('delete_by_user/:id')
+  async deleteByUser(@Param() params: any) {
+    return await this.billService.delete(null, parseInt(params.id));
   }
 }

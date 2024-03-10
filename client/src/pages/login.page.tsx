@@ -120,7 +120,7 @@ const LoginPage: React.FC<{
 };
 
 const mapStateToProps = (state: any) => ({
-  user: state?.initialUser,
+  user: state?.userReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

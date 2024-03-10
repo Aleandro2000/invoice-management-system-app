@@ -19,13 +19,13 @@ export class InvoiceController {
   @UseGuards(VerifyGuard)
   @Get('read')
   async read(@Param() id?: number) {
-    return await this.invoiceService.read(id, "invoice");
+    return await this.invoiceService.read(id, 'invoice');
   }
-  
+
   @UseGuards(VerifyGuard)
   @Get('read/mine/:id')
   async readMine(@Param() id?: number) {
-    return await this.invoiceService.read(id, "own_invoices");
+    return await this.invoiceService.read(id, 'own_invoices');
   }
 
   @UseGuards(VerifyGuard)
@@ -36,13 +36,19 @@ export class InvoiceController {
 
   @UseGuards(VerifyGuard)
   @Put('update/:id')
-  async update(@Body() bill: BillDto, @Param() id: number) {
-    return await this.invoiceService.update(bill, id);
+  async update(@Body() bill: BillDto, @Param() params: any) {
+    return await this.invoiceService.update(bill, parseInt(params.id));
   }
 
   @UseGuards(VerifyGuard)
-  @Delete('delete')
-  async delete(@Param() id: number) {
-    return await this.invoiceService.delete(id);
+  @Delete('delete/:id')
+  async delete(@Param() params: any) {
+    return await this.invoiceService.delete(parseInt(params.id));
+  }
+
+  @UseGuards(VerifyGuard)
+  @Delete('delete_by_user/:id')
+  async deleteByUser(@Param() params: any) {
+    return await this.invoiceService.delete(null, parseInt(params.id));
   }
 }
