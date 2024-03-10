@@ -20,3 +20,5 @@ This project is an Invoice Management App built using React.js, Nest.js, TypeScr
 - **TypeScript:** Superset of JavaScript that adds static typing and other features for better code quality.
 - **PostgreSQL:** Powerful open-source relational database management system for data storage.
 - **Prisma:** Modern database toolkit for TypeScript and Node.js that simplifies database access and management.
+
+**Note:** Before running the application, ensure that you rename `.env.example` to `.env` and provide the necessary environment variables.
