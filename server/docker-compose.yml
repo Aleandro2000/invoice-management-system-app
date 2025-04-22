@@ -13,9 +13,5 @@ services:
 
   db:
     image: postgres:latest
-    environment:
-      - POSTGRES_USER=<username>
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=billing_database
     ports:
       - "5432:5432"
